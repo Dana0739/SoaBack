@@ -71,7 +71,6 @@ public class MainServlet extends HttpServlet {
                                 if (request.getParameterMap().size() == 1) {
                                     ArrayList<Worker> workers = CRUDService.getAllWorkers();
                                     writer.append(workers.stream().map(Worker::convertToXML).collect(Collectors.joining()));
-                                    //todo check
                                 } else {
                                     response.sendError(422, "No parameters except function required");
                                 }
@@ -93,7 +92,6 @@ public class MainServlet extends HttpServlet {
                                     ArrayList<Worker> workersPage = CRUDService.getWorkers(filterFields, filterValues,
                                             sortFields, pageSize, pageNumber);
                                     writer.append(workersPage.stream().map(Worker::convertToXML).collect(Collectors.joining()));
-                                    //todo check
                                 }
                                 break;
 
@@ -118,7 +116,6 @@ public class MainServlet extends HttpServlet {
                         Double salary = Double.parseDouble(request.getParameter("salary"));
                         ArrayList<Worker> workers = CRUDService.countWorkersBySalaryEqualsTo(salary);
                         writer.append(workers.stream().map(Worker::convertToXML).collect(Collectors.joining()));
-                        //todo check
                     } else if (request.getParameterMap().size() == 0) {
                         response.sendError(422, "salary parameter is required");
                     } else {
@@ -131,7 +128,6 @@ public class MainServlet extends HttpServlet {
                         String prefix = request.getParameter("prefix");
                         ArrayList<Worker> workers = CRUDService.getWorkersWithNamesStartsWith(prefix);
                         writer.append(workers.stream().map(Worker::convertToXML).collect(Collectors.joining()));
-                        //todo check
                     } else {
                         response.sendError(422, "prefix parameter is required and must be the only field in this request");
                     }

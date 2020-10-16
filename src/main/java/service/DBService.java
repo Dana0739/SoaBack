@@ -158,7 +158,7 @@ public class DBService {
         PreparedStatement update = connection.prepareStatement
                 ("UPDATE WORKER SET NAME = ?, COORDINATE_X = ?, COORDINATE_Y = ?, CREATION_DATE = ?, " +
                         "SALARY = ?, END_DATE = ?, POSITION = ?, STATUS = ?, O_ANNUAL_TURNOVER = ?, " +
-                        "O_EMPLOYEES_COUNT = ?, O_ORGANIZATION_TYPE = ?, WHERE id = ?;");
+                        "O_EMPLOYEES_COUNT = ?, O_ORGANIZATION_TYPE = ? WHERE id = ?;");
 
         update.setString(1, worker.getName());
         update.setDouble(2, worker.getCoordinates().getX());

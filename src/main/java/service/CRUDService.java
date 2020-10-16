@@ -26,9 +26,7 @@ public class CRUDService {
 
         Worker worker = new Worker(name, x, y, creationDate, salary, endDate,
                 position, status, annualTurnover, employeesCount, organizationType);
-
         DBService.insertWorker(DBService.getConnection(), worker);
-
         return worker;
     }
 
@@ -52,9 +50,7 @@ public class CRUDService {
 
         Worker worker = new Worker(name, x, y, creationDate, salary, endDate,
                 position, status, annualTurnover, employeesCount, organizationType);
-
         DBService.updateWorker(DBService.getConnection(), worker);
-
         return worker;
     }
 
