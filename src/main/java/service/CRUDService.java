@@ -39,7 +39,7 @@ public class CRUDService {
         String name = parameters.get("name")[0];
         Double x = Double.parseDouble(parameters.get("coordinateX")[0]);
         double y = parameters.get("coordinateY") == null ? 0 : Double.parseDouble(parameters.get("coordinateY")[0]);
-        ZonedDateTime creationDate = ZonedDateTime.now();
+        ZonedDateTime creationDate = ZonedDateTime.parse(parameters.get("creationDate")[0]);
         Double salary = Double.parseDouble(parameters.get("salary")[0]);
         Date endDate = parameters.get("endDate") == null ? null : new SimpleDateFormat("dd/MM/yyyy").parse(parameters.get("endDate")[0]);
         String position = parameters.get("position")[0];
@@ -67,7 +67,8 @@ public class CRUDService {
     //paging size may be 0
     //page number may be 0
     public static ArrayList<Worker> getWorkers(String[] filterFields, String[] filterValues,
-                                        String[] sortFields, int pageSize, int pageNumber) {
+                                        String[] sortFields, int pageSize, int pageNumber) throws SQLException {
+        ArrayList<Worker> workers = getAllWorkers();
 
         return null;
     }

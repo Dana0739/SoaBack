@@ -156,22 +156,21 @@ public class DBService {
 
     public static Worker updateWorker(Connection connection, Worker worker) throws SQLException {
         PreparedStatement update = connection.prepareStatement
-                ("UPDATE WORKER SET NAME = ?, COORDINATE_X = ?, COORDINATE_Y = ?, CREATION_DATE = ?, " +
+                ("UPDATE WORKER SET NAME = ?, COORDINATE_X = ?, COORDINATE_Y = ?, " +
                         "SALARY = ?, END_DATE = ?, POSITION = ?, STATUS = ?, O_ANNUAL_TURNOVER = ?, " +
                         "O_EMPLOYEES_COUNT = ?, O_ORGANIZATION_TYPE = ? WHERE id = ?;");
 
         update.setString(1, worker.getName());
         update.setDouble(2, worker.getCoordinates().getX());
         update.setDouble(3, worker.getCoordinates().getY());
-        update.setTimestamp(4, java.sql.Timestamp.from(worker.getCreationDate().toInstant()));
-        update.setDouble(5, worker.getSalary());
-        update.setTimestamp(6, new Timestamp(worker.getEndDate().getTime()));
-        update.setString(7, worker.getPosition().getTitle());
-        update.setString(8, worker.getStatus().getTitle());
-        update.setInt(9, worker.getOrganization().getAnnualTurnover());
-        update.setInt(10, worker.getOrganization().getEmployeesCount());
-        update.setString(11, worker.getOrganization().getType().getTitle());
-        update.setLong(12, worker.getId());
+        update.setDouble(4, worker.getSalary());
+        update.setTimestamp(5, new Timestamp(worker.getEndDate().getTime()));
+        update.setString(6, worker.getPosition().getTitle());
+        update.setString(7, worker.getStatus().getTitle());
+        update.setInt(8, worker.getOrganization().getAnnualTurnover());
+        update.setInt(9, worker.getOrganization().getEmployeesCount());
+        update.setString(10, worker.getOrganization().getType().getTitle());
+        update.setLong(11, worker.getId());
 
         update.executeUpdate();
 
