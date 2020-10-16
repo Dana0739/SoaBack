@@ -11,7 +11,7 @@ import java.sql.Timestamp;
 
 public class DBService {
 
-    static final String DB_URL = "jdbc:postgresql://127.0.0.1:5432/";
+    static final String DB_URL = "jdbc:postgresql://127.0.0.1:5432/postgres";
     static final String USER = "postgres";
     static final String PASS = "123";
 
@@ -72,25 +72,27 @@ public class DBService {
     }
 
     public static Worker getWorkerById(Connection connection, long id) throws SQLException {
-        Statement statement = connection.createStatement();
-        ResultSet rs = statement.executeQuery( "SELECT * FROM WORKER WHERE ID = " + id + ";" );
-        rs.next();
+        PreparedStatement select = connection.prepareStatement("SELECT * FROM WORKER WHERE ID = ?;");
+        select.setLong(1, id);
+        ResultSet rs = select.executeQuery();
+        Worker worker = null;
+        if(rs.next()) {
+            String name = rs.getString("NAME");
+            Double x = rs.getDouble("COORDINATE_X");
+            double y = rs.getDouble("COORDINATE_Y");
+            ZonedDateTime creationDate = ZonedDateTime.ofInstant(rs.getDate("CREATION_DATE").toInstant(),
+                    ZoneId.systemDefault());
+            Double salary = rs.getDouble("SALARY");
+            Date endDate = rs.getDate("END_DATE");
+            String position = rs.getString("POSITION");
+            String status = rs.getString("STATUS");
+            Integer annualTurnover = rs.getInt("O_ANNUAL_TURNOVER");
+            int employeesCount = rs.getInt("O_EMPLOYEES_COUNT");
+            String organizationType = rs.getString("O_ORGANIZATION_TYPE");
 
-        String name = rs.getString("NAME");
-        Double x = rs.getDouble("COORDINATE_X");
-        double y = rs.getDouble("COORDINATE_Y");
-        ZonedDateTime creationDate = ZonedDateTime.ofInstant(rs.getDate("CREATION_DATE").toInstant(),
-                ZoneId.systemDefault());
-        Double salary = rs.getDouble("SALARY");
-        Date endDate = rs.getDate("END_DATE");
-        String position = rs.getString("POSITION");
-        String status = rs.getString("STATUS");
-        Integer annualTurnover = rs.getInt("O_ANNUAL_TURNOVER");
-        int employeesCount = rs.getInt("O_EMPLOYEES_COUNT");
-        String organizationType = rs.getString("O_ORGANIZATION_TYPE");
-
-        Worker worker = new Worker(name, x, y, creationDate, salary, endDate,
-                position, status, annualTurnover, employeesCount, organizationType).setId(id);
+            worker = new Worker(name, x, y, creationDate, salary, endDate,
+                    position, status, annualTurnover, employeesCount, organizationType).setId(id);
+        }
         rs.close();
         connection.close();
         return worker;
@@ -100,6 +102,7 @@ public class DBService {
         Statement statement = connection.createStatement();
         ResultSet rs = statement.executeQuery( "SELECT * FROM WORKER;");
         ArrayList<Worker> workers = new ArrayList<>();
+
         while (rs.next()) {
             long id = rs.getLong("ID");
             String name = rs.getString("NAME");
@@ -134,7 +137,7 @@ public class DBService {
         insert.setDouble(3, worker.getCoordinates().getY());
         insert.setTimestamp(4, java.sql.Timestamp.from(worker.getCreationDate().toInstant()));
         insert.setDouble(5, worker.getSalary());
-        insert.setObject(6, new Timestamp(worker.getEndDate().getTime()));
+        insert.setTimestamp(6, new Timestamp(worker.getEndDate().getTime()));
         insert.setString(7, worker.getPosition().getTitle());
         insert.setString(8, worker.getStatus().getTitle());
         insert.setInt(9, worker.getOrganization().getAnnualTurnover());
@@ -142,15 +145,14 @@ public class DBService {
         insert.setString(11, worker.getOrganization().getType().getTitle());
         insert.executeUpdate();
 
-
-        Statement statement = connection.createStatement();
-        ResultSet rs = statement.executeQuery("SELECT ID FROM WORKER WHERE CREATION_DATE = " +
-                Date.from(worker.getCreationDate().toInstant()) +";");
+        PreparedStatement select = connection.prepareStatement("SELECT ID FROM WORKER WHERE CREATION_DATE = ?;");
+        select.setTimestamp(1, java.sql.Timestamp.from(worker.getCreationDate().toInstant()));
+        ResultSet rs = select.executeQuery();
         rs.next();
         worker.setId(rs.getLong("ID"));
 
         insert.close();
-        statement.close();
+        select.close();
         connection.close();
         return worker;
     }
@@ -182,8 +184,9 @@ public class DBService {
     }
 
     public static Worker deleteWorker(Connection connection, long id) throws SQLException {
-        Statement statement = connection.createStatement();
-        ResultSet rs = statement.executeQuery( "SELECT * FROM WORKER WHERE ID = " + id + ";" );
+        PreparedStatement select = connection.prepareStatement("SELECT * FROM WORKER WHERE ID = ?;");
+        select.setLong(1, id);
+        ResultSet rs = select.executeQuery();
         rs.next();
 
         String name = rs.getString("NAME");
@@ -207,7 +210,7 @@ public class DBService {
         delete.executeUpdate();
 
         delete.close();
-        statement.close();
+        select.close();
         connection.close();
         return worker;
     }
