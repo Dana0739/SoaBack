@@ -174,6 +174,15 @@ public class DBService {
 
         update.executeUpdate();
 
+        PreparedStatement select = connection.prepareStatement("SELECT CREATION_DATE FROM WORKER WHERE ID = ?;");
+        select.setLong(1, worker.getId());
+        ResultSet rs = select.executeQuery();
+        rs.next();
+        ZonedDateTime creationDate = ZonedDateTime.ofInstant(rs.getTimestamp(1).toInstant(),
+                ZoneId.systemDefault());
+        worker.setCreationDate(creationDate);
+
+        select.close();
         update.close();
         connection.close();
         return worker;

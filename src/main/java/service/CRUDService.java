@@ -39,7 +39,7 @@ public class CRUDService {
         String name = parameters.get("name")[0];
         Double x = Double.parseDouble(parameters.get("coordinateX")[0]);
         double y = parameters.get("coordinateY") == null ? 0 : Double.parseDouble(parameters.get("coordinateY")[0]);
-        ZonedDateTime creationDate = ZonedDateTime.parse(parameters.get("creationDate")[0]);
+        ZonedDateTime creationDate = ZonedDateTime.parse(parameters.get("creationDate")[0].replace(" ", "+"));
         Double salary = Double.parseDouble(parameters.get("salary")[0]);
         Date endDate = parameters.get("endDate") == null ? null : new SimpleDateFormat("dd/MM/yyyy").parse(parameters.get("endDate")[0]);
         String position = parameters.get("position")[0];
@@ -49,7 +49,7 @@ public class CRUDService {
         String organizationType = parameters.get("organizationType")[0];
 
         Worker worker = new Worker(name, x, y, creationDate, salary, endDate,
-                position, status, annualTurnover, employeesCount, organizationType);
+                position, status, annualTurnover, employeesCount, organizationType).setId(id);
         DBService.updateWorker(DBService.getConnection(), worker);
         return worker;
     }
