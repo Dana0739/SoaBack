@@ -38,11 +38,8 @@ public class DBService {
         if (connection != null) {
             System.out.println("You successfully connected to database now");
 
-            connection.setAutoCommit(false);
-
             DatabaseMetaData meta = connection.getMetaData();
-            ResultSet res = meta.getTables(null, null, "WORKER",
-                    new String[] {"TABLE"});
+            ResultSet res = meta.getTables(null, null, "worker", null);
             if (!res.next()) createTable(connection);
 
         } else {
@@ -68,7 +65,7 @@ public class DBService {
                 " O_EMPLOYEES_COUNT     INT                         NOT NULL," +
                 " O_ORGANIZATION_TYPE   CHAR(30)                    NOT NULL)";
         statement.executeUpdate(sql);
-        statement.close(); // connection.getMetaData().getTables(null, null, "WORKER", new String[] {"TABLE"}).next()
+        statement.close();
     }
 
     public static Worker getWorkerById(Connection connection, long id) throws SQLException {
@@ -80,15 +77,15 @@ public class DBService {
             String name = rs.getString("NAME");
             Double x = rs.getDouble("COORDINATE_X");
             double y = rs.getDouble("COORDINATE_Y");
-            ZonedDateTime creationDate = ZonedDateTime.ofInstant(rs.getDate("CREATION_DATE").toInstant(),
+            ZonedDateTime creationDate = ZonedDateTime.ofInstant(rs.getTimestamp("CREATION_DATE").toInstant(),
                     ZoneId.systemDefault());
             Double salary = rs.getDouble("SALARY");
-            Date endDate = rs.getDate("END_DATE");
-            String position = rs.getString("POSITION");
-            String status = rs.getString("STATUS");
+            Date endDate = rs.getTimestamp("END_DATE");
+            String position = rs.getString("POSITION").trim();
+            String status = rs.getString("STATUS").trim();
             Integer annualTurnover = rs.getInt("O_ANNUAL_TURNOVER");
             int employeesCount = rs.getInt("O_EMPLOYEES_COUNT");
-            String organizationType = rs.getString("O_ORGANIZATION_TYPE");
+            String organizationType = rs.getString("O_ORGANIZATION_TYPE").trim();
 
             worker = new Worker(name, x, y, creationDate, salary, endDate,
                     position, status, annualTurnover, employeesCount, organizationType).setId(id);
@@ -108,15 +105,15 @@ public class DBService {
             String name = rs.getString("NAME");
             Double x = rs.getDouble("COORDINATE_X");
             double y = rs.getDouble("COORDINATE_Y");
-            ZonedDateTime creationDate = ZonedDateTime.ofInstant(rs.getDate("CREATION_DATE").toInstant(),
+            ZonedDateTime creationDate = ZonedDateTime.ofInstant(rs.getTimestamp("CREATION_DATE").toInstant(),
                     ZoneId.systemDefault());
             Double salary = rs.getDouble("SALARY");
-            Date endDate = rs.getDate("END_DATE");
-            String position = rs.getString("POSITION");
-            String status = rs.getString("STATUS");
+            Date endDate = rs.getTimestamp("END_DATE");
+            String position = rs.getString("POSITION").trim();
+            String status = rs.getString("STATUS").trim();
             Integer annualTurnover = rs.getInt("O_ANNUAL_TURNOVER");
             int employeesCount = rs.getInt("O_EMPLOYEES_COUNT");
-            String organizationType = rs.getString("O_ORGANIZATION_TYPE");
+            String organizationType = rs.getString("O_ORGANIZATION_TYPE").trim();
 
             workers.add(new Worker(name, x, y, creationDate, salary, endDate,
                     position, status, annualTurnover, employeesCount, organizationType).setId(id));
@@ -166,9 +163,9 @@ public class DBService {
         update.setString(1, worker.getName());
         update.setDouble(2, worker.getCoordinates().getX());
         update.setDouble(3, worker.getCoordinates().getY());
-        update.setDate(4, (java.sql.Date) Date.from(worker.getCreationDate().toInstant()));
+        update.setTimestamp(4, java.sql.Timestamp.from(worker.getCreationDate().toInstant()));
         update.setDouble(5, worker.getSalary());
-        update.setDate(6, (java.sql.Date) worker.getEndDate());
+        update.setTimestamp(6, new Timestamp(worker.getEndDate().getTime()));
         update.setString(7, worker.getPosition().getTitle());
         update.setString(8, worker.getStatus().getTitle());
         update.setInt(9, worker.getOrganization().getAnnualTurnover());
@@ -192,15 +189,15 @@ public class DBService {
         String name = rs.getString("NAME");
         Double x = rs.getDouble("COORDINATE_X");
         double y = rs.getDouble("COORDINATE_Y");
-        ZonedDateTime creationDate = ZonedDateTime.ofInstant(rs.getDate("CREATION_DATE").toInstant(),
+        ZonedDateTime creationDate = ZonedDateTime.ofInstant(rs.getTimestamp("CREATION_DATE").toInstant(),
                 ZoneId.systemDefault());
         Double salary = rs.getDouble("SALARY");
-        Date endDate = rs.getDate("END_DATE");
-        String position = rs.getString("POSITION");
-        String status = rs.getString("STATUS");
+        Date endDate = rs.getTimestamp("END_DATE");
+        String position = rs.getString("POSITION").trim();
+        String status = rs.getString("STATUS").trim();
         Integer annualTurnover = rs.getInt("O_ANNUAL_TURNOVER");
         int employeesCount = rs.getInt("O_EMPLOYEES_COUNT");
-        String organizationType = rs.getString("O_ORGANIZATION_TYPE");
+        String organizationType = rs.getString("O_ORGANIZATION_TYPE").trim();
 
         Worker worker = new Worker(name, x, y, creationDate, salary, endDate,
                 position, status, annualTurnover, employeesCount, organizationType).setId(id);
