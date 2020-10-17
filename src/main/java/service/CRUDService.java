@@ -2,9 +2,12 @@ package service;
 
 import model.*;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -62,15 +65,14 @@ public class CRUDService {
         return DBService.getAllWorkers(DBService.getConnection());
     }
 
+
     //filter fields
     //sort fields
     //paging size may be 0
     //page number may be 0
     public static ArrayList<Worker> getWorkers(String[] filterFields, String[] filterValues,
                                         String[] sortFields, int pageSize, int pageNumber) throws SQLException {
-        ArrayList<Worker> workers = getAllWorkers();
-
-        return null;
+        return DBService.getWorkers(DBService.getConnection(), filterFields, filterValues, sortFields, pageSize, pageNumber);
     }
 
     public static Worker getWorkerWithMaxSalary() throws SQLException {

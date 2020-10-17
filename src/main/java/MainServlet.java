@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
@@ -32,9 +33,11 @@ public class MainServlet extends HttpServlet {
         response.setContentType("text/xml;charset=UTF-8");
         PrintWriter writer = response.getWriter();
         writer.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+        writer.append("<response>");
         try {
             Worker worker = CRUDService.addWorker(request.getParameterMap());
             writer.append(worker.convertToXML());
+            writer.append("</response>");
         } catch (Exception e) {
             response.sendError(400, e.getMessage());
         }
@@ -47,6 +50,7 @@ public class MainServlet extends HttpServlet {
         response.setContentType("text/xml;charset=UTF-8");
         PrintWriter writer = response.getWriter();
         writer.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+        writer.append("<response>");
 
         try {
             switch (path) {
@@ -62,6 +66,7 @@ public class MainServlet extends HttpServlet {
                                     long id = Long.parseLong(request.getParameter("id"));
                                     Worker worker = CRUDService.getWorkerById(id);
                                     writer.append(worker.convertToXML());
+                                    writer.append("</response>");
                                 } else {
                                     response.sendError(422, "id parameter must be the only field in this request");
                                 }
@@ -71,6 +76,7 @@ public class MainServlet extends HttpServlet {
                                 if (request.getParameterMap().size() == 1) {
                                     ArrayList<Worker> workers = CRUDService.getAllWorkers();
                                     writer.append(workers.stream().map(Worker::convertToXML).collect(Collectors.joining()));
+                                    writer.append("</response>");
                                 } else {
                                     response.sendError(422, "No parameters except function required");
                                 }
@@ -92,6 +98,7 @@ public class MainServlet extends HttpServlet {
                                     ArrayList<Worker> workersPage = CRUDService.getWorkers(filterFields, filterValues,
                                             sortFields, pageSize, pageNumber);
                                     writer.append(workersPage.stream().map(Worker::convertToXML).collect(Collectors.joining()));
+                                    writer.append("</response>");
                                 }
                                 break;
 
@@ -106,6 +113,7 @@ public class MainServlet extends HttpServlet {
                     if (request.getParameterMap().size() == 0) {
                         Worker worker = CRUDService.getWorkerWithMaxSalary();
                         writer.append(worker.convertToXML());
+                        writer.append("</response>");
                     } else {
                         response.sendError(422, "No parameters required");
                     }
@@ -116,6 +124,7 @@ public class MainServlet extends HttpServlet {
                         Double salary = Double.parseDouble(request.getParameter("salary"));
                         ArrayList<Worker> workers = CRUDService.countWorkersBySalaryEqualsTo(salary);
                         writer.append(workers.stream().map(Worker::convertToXML).collect(Collectors.joining()));
+                        writer.append("</response>");
                     } else if (request.getParameterMap().size() == 0) {
                         response.sendError(422, "salary parameter is required");
                     } else {
@@ -128,6 +137,7 @@ public class MainServlet extends HttpServlet {
                         String prefix = request.getParameter("prefix");
                         ArrayList<Worker> workers = CRUDService.getWorkersWithNamesStartsWith(prefix);
                         writer.append(workers.stream().map(Worker::convertToXML).collect(Collectors.joining()));
+                        writer.append("</response>");
                     } else {
                         response.sendError(422, "prefix parameter is required and must be the only field in this request");
                     }
@@ -137,8 +147,8 @@ public class MainServlet extends HttpServlet {
                     response.sendError(404, PAGE_NOT_FOUND);
 
             }
-        } catch (Exception e) {
-            response.sendError(400, e.getMessage());
+        } catch (SQLException e) {
+            response.sendError(500, e.getMessage());
         }
     }
 
@@ -150,7 +160,9 @@ public class MainServlet extends HttpServlet {
         writer.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         try {
             Worker worker = CRUDService.updateWorker(request.getParameterMap());
+            writer.append("<response>");
             writer.append(worker.convertToXML());
+            writer.append("</response>");
         } catch (Exception e) {
             response.sendError(400, e.getMessage());
         }
@@ -171,7 +183,9 @@ public class MainServlet extends HttpServlet {
             try {
                 long id = Long.parseLong(request.getParameter("id"));
                 Worker worker = CRUDService.deleteWorker(id);
+                writer.append("<response>");
                 writer.append(worker.convertToXML());
+                writer.append("</response>");
             } catch (NumberFormatException e) {
                 response.sendError(422, "id parameter must be numeric value");
             } catch (Exception e) {
