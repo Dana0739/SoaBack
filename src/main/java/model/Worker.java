@@ -16,11 +16,6 @@ public class Worker {
     private Status status; //Поле может быть null
     private Organization organization; //Поле не может быть null
 
-    public Worker(String name, Double x, ZonedDateTime creationDate, Double salary, Date endDate, String position, String status,
-                  Integer annualTurnover, int employeesCount, String organizationType) {
-        this(name, new Coordinates(x), creationDate, salary, endDate, position, status, annualTurnover, employeesCount, organizationType);
-    }
-
     public Worker(String name, Double x, double y, ZonedDateTime creationDate, Double salary, Date endDate, String position, String status,
                   Integer annualTurnover, int employeesCount, String organizationType) {
         this(name, new Coordinates(x, y), creationDate, salary, endDate, position, status, annualTurnover, employeesCount, organizationType);
@@ -50,16 +45,20 @@ public class Worker {
         return "<worker>" +
                 "<id>" + this.id + "</id>" +
                 "<name>" + this.name + "</name>" +
-                "<coordinateX>" + this.coordinates.getX() + "</coordinateX>" +
-                "<coordinateY>" + this.coordinates.getY() + "</coordinateY>" +
+                "<coordinates>" +
+                "<x>" + this.coordinates.getX() + "</x>" +
+                "<y>" + this.coordinates.getY() + "</y>" +
+                "</coordinates>" +
                 "<creationDate>" + this.creationDate + "</creationDate>" +
                 "<salary>" + this.salary + "</salary>" +
                 "<endDate>" + this.endDate + "</endDate>" +
                 "<position>" + this.position.getTitle() + "</position>" +
                 "<status>" + this.status.getTitle() + "</status>" +
+                "<organization>" +
                 "<annualTurnover>" + this.organization.getAnnualTurnover() + "</annualTurnover>" +
                 "<employeesCount>" + this.organization.getEmployeesCount() + "</employeesCount>" +
-                "<organizationType>" + this.organization.getType().getTitle() + "</organizationType>" +
+                "<type>" + this.organization.getType().getTitle() + "</type>" +
+                "</organization>" +
                 "</worker>";
     }
 
@@ -101,6 +100,16 @@ public class Worker {
 
     public Worker setCoordinates(Coordinates coordinates) {
         this.coordinates = coordinates;
+        return this;
+    }
+
+    public Worker setCoordinateX(Double x) {
+        this.coordinates.setX(x);
+        return this;
+    }
+
+    public Worker setCoordinateY(double y) {
+        this.coordinates.setY(y);
         return this;
     }
 
