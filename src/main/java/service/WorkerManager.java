@@ -69,8 +69,9 @@ public class WorkerManager {
         ArrayList<Worker> workers =
                 WorkerStorage.getWorkers(WorkerStorage.getConnection(), filterFields, filterValues, sortFields);
         return (pageSize == 0 || workers.size() == 0) ? workers
-                : (ArrayList<Worker>) workers.subList(pageNumber * pageSize,
-                    min((pageNumber + 1) * pageSize - 1, workers.size() - 1));
+                : ((pageNumber * pageSize > workers.size()) ? new ArrayList<>()
+                : new ArrayList<>(workers.subList(pageNumber * pageSize,
+                    min((pageNumber + 1) * pageSize - 1, workers.size() - 1))));
     }
 
     public static Worker getWorkerWithMaxSalary() throws SQLException {

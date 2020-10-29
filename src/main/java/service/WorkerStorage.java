@@ -12,8 +12,8 @@ import java.util.Date;
 public class WorkerStorage {
 
     static final String DB_URL = "jdbc:postgresql://localhost:5432/studs";
-    static final String USER = "s243875";
-    static final String PASS = "xic778";
+    static final String USER = "username";
+    static final String PASS = "password";
 
 //    public static void main(String[] args) throws SQLException {
 //        Worker w = new Worker("test", 1.0, 2.0, ZonedDateTime.now(), 100.0,
@@ -123,77 +123,76 @@ public class WorkerStorage {
 
     public static ArrayList<Worker> getWorkers(Connection connection, String[] filterFields, String[] filterValues,
                                                String[] sortFields) throws SQLException {
-        List<String> filterFieldsAL = Arrays.asList(filterFields);
-        Map<String, Integer> filterFieldsMap = new HashMap<>();
-        List<String> filterFieldsList = new ArrayList<>();
-        int i = 0;
-        for (String key : filterFieldsAL) {
-            filterFieldsMap.put(FIELDS.get(key), i);
-            filterFieldsList.add(FIELDS.get(key));
-            i++;
+        List<String> filterFieldsList = Arrays.asList(filterFields);
+        StringBuilder selectBuilder = new StringBuilder("SELECT * FROM WORKER ");
+        if (!filterFieldsList.isEmpty()) {
+            selectBuilder.append(" WHERE ");
+            for (String field : filterFieldsList) {
+                selectBuilder.append(FIELDS.get(field));
+                selectBuilder.append(" = ? and ");
+            }
+            selectBuilder.replace(selectBuilder.lastIndexOf("and"), selectBuilder.lastIndexOf("and") + 3, "");
         }
-        StringBuilder selectBuilder = new StringBuilder("SELECT * FROM WORKER WHERE ");
-        for (String field: filterFields) {
-            selectBuilder.append(FIELDS.get(field));
-            selectBuilder.append(" = ? and ");
+
+        if (sortFields.length != 0) {
+            selectBuilder.append(" ORDER BY ");
+            for (String field : sortFields) {
+                selectBuilder.append(FIELDS.get(field));
+                selectBuilder.append(", ");
+            }
+            selectBuilder.deleteCharAt(selectBuilder.lastIndexOf(","));
         }
-        selectBuilder.replace(selectBuilder.lastIndexOf("and"), selectBuilder.lastIndexOf("and") + 3, "");
-        selectBuilder.append("ORDER BY ");
-        for (String field: sortFields) {
-            selectBuilder.append(FIELDS.get(field));
-            selectBuilder.append(", ");
-        }
-        selectBuilder.deleteCharAt(selectBuilder.lastIndexOf(","));
+
         selectBuilder.append(";");
         PreparedStatement preparedStatement = connection.prepareStatement(selectBuilder.toString());
 
-        if (filterFieldsList.contains("ID")) {
-            preparedStatement.setLong(filterFieldsMap.get("ID") + 1,
-                    Long.parseLong(filterValues[filterFieldsMap.get("ID")]));
+        if (filterFieldsList.contains("id")) {
+            preparedStatement.setLong(filterFieldsList.indexOf("id") + 1,
+                    Long.parseLong(filterValues[filterFieldsList.indexOf("id")]));
         }
-        if (filterFieldsList.contains("NAME")) {
-            preparedStatement.setString(filterFieldsMap.get("NAME") + 1,
-                    filterValues[filterFieldsMap.get("NAME")]);
+        if (filterFieldsList.contains("name")) {
+            preparedStatement.setString(filterFieldsList.indexOf("name") + 1,
+                    filterValues[filterFieldsList.indexOf("name")]);
         }
-        if (filterFieldsList.contains("COORDINATE_X")) {
-            preparedStatement.setDouble(filterFieldsMap.get("COORDINATE_X") + 1,
-                    Double.parseDouble(filterValues[filterFieldsMap.get("COORDINATE_X")]));
+        if (filterFieldsList.contains("coordinateX")) {
+            preparedStatement.setDouble(filterFieldsList.indexOf("coordinateX") + 1,
+                    Double.parseDouble(filterValues[filterFieldsList.indexOf("coordinateX")]));
         }
-        if (filterFieldsList.contains("COORDINATE_Y")) {
-            preparedStatement.setDouble(filterFieldsMap.get("COORDINATE_Y") + 1,
-                    Double.parseDouble(filterValues[filterFieldsMap.get("COORDINATE_Y")]));
+        if (filterFieldsList.contains("coordinateY")) {
+            preparedStatement.setDouble(filterFieldsList.indexOf("coordinateY") + 1,
+                    Double.parseDouble(filterValues[filterFieldsList.indexOf("coordinateY")]));
         }
-        if (filterFieldsList.contains("CREATION_DATE")) {
-            preparedStatement.setTimestamp(filterFieldsMap.get("CREATION_DATE") + 1,
-                    Timestamp.valueOf(filterValues[filterFieldsMap.get("CREATION_DATE")]));
+        if (filterFieldsList.contains("creationDate")) {
+            preparedStatement.setTimestamp(filterFieldsList.indexOf("creationDate") + 1,
+                    Timestamp.valueOf(filterValues[filterFieldsList.indexOf("creationDate")]));
         }
-        if (filterFieldsList.contains("SALARY")) {
-            preparedStatement.setDouble(filterFieldsMap.get("SALARY") + 1,
-                    Double.parseDouble(filterValues[filterFieldsMap.get("SALARY")]));
+        if (filterFieldsList.contains("salary")) {
+            preparedStatement.setDouble(filterFieldsList.indexOf("salary") + 1,
+                    Double.parseDouble(filterValues[filterFieldsList.indexOf("salary")]));
         }
-        if (filterFieldsList.contains("END_DATE")) {
-            preparedStatement.setTimestamp(filterFieldsMap.get("END_DATE") + 1,
-                    Timestamp.valueOf(filterValues[filterFieldsMap.get("END_DATE")]));
+        if (filterFieldsList.contains("endDate")) {
+            preparedStatement.setTimestamp(filterFieldsList.indexOf("endDate") + 1,
+                    Timestamp.valueOf(filterValues[filterFieldsList.indexOf("endDate")]));
         }
-        if (filterFieldsList.contains("POSITION")) {
-            preparedStatement.setString(filterFieldsMap.get("POSITION") + 1,
-                    filterValues[filterFieldsMap.get("POSITION")]);
+        if (filterFieldsList.contains("position")) {
+            preparedStatement.setString(filterFieldsList.indexOf("position") + 1,
+                    filterValues[filterFieldsList.indexOf("position")]);
         }
-        if (filterFieldsList.contains("STATUS")) {
-            preparedStatement.setString(filterFieldsMap.get("STATUS") + 1,
-                    filterValues[filterFieldsMap.get("STATUS")]);
+        if (filterFieldsList.contains("status")) {
+            preparedStatement.setString(filterFieldsList.indexOf("status") + 1,
+                    filterValues[filterFieldsList.indexOf("status")]);
         }
-        if (filterFieldsList.contains("O_ANNUAL_TURNOVER")) {
-            preparedStatement.setInt(filterFieldsMap.get("O_ANNUAL_TURNOVER") + 1,
-                    Integer.parseInt(filterValues[filterFieldsMap.get("O_ANNUAL_TURNOVER")]));
+        if (filterFieldsList.contains("annualTurnover")) {
+            preparedStatement.setInt(filterFieldsList.indexOf("annualTurnover") + 1,
+                    Integer.parseInt(filterValues[filterFieldsList.indexOf("annualTurnover")]));
         }
-        if (filterFieldsList.contains("O_EMPLOYEES_COUNT")) {
-            preparedStatement.setInt(filterFieldsMap.get("O_EMPLOYEES_COUNT") + 1,
-                    Integer.parseInt(filterValues[filterFieldsMap.get("O_EMPLOYEES_COUNT")]));
+        if (filterFieldsList.contains("employeesCount")) {
+            preparedStatement.setInt(filterFieldsList.indexOf("employeesCount") + 1,
+                    Integer.parseInt(filterValues[filterFieldsList.indexOf("employeesCount")]));
         }
-        if (filterFieldsList.contains("O_ORGANIZATION_TYPE")) {
-            preparedStatement.setString(filterFieldsMap.get("O_ORGANIZATION_TYPE") + 1,
-                    filterValues[filterFieldsMap.get("O_ORGANIZATION_TYPE")]);
+        if (filterFieldsList.contains("organizationType")) {
+            preparedStatement.setString(filterFieldsList.indexOf("organizationType") + 1,
+                    filterValues[filterFieldsList.indexOf("organizationType")]);
         }
 
         ResultSet rs = preparedStatement.executeQuery();
