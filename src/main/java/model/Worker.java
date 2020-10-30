@@ -45,20 +45,16 @@ public class Worker {
         return "<worker>" +
                 "<id>" + this.id + "</id>" +
                 "<name>" + this.name + "</name>" +
-                "<coordinates>" +
-                "<x>" + this.coordinates.getX() + "</x>" +
-                "<y>" + this.coordinates.getY() + "</y>" +
-                "</coordinates>" +
+                "<coordinateX>" + this.coordinates.getX() + "</coordinateX>" +
+                "<coordinateY>" + this.coordinates.getY() + "</coordinateY>" +
                 "<creationDate>" + this.creationDate + "</creationDate>" +
                 "<salary>" + this.salary + "</salary>" +
                 "<endDate>" + this.endDate + "</endDate>" +
                 "<position>" + this.position.getTitle() + "</position>" +
                 "<status>" + this.status.getTitle() + "</status>" +
-                "<organization>" +
                 "<annualTurnover>" + this.organization.getAnnualTurnover() + "</annualTurnover>" +
                 "<employeesCount>" + this.organization.getEmployeesCount() + "</employeesCount>" +
-                "<type>" + this.organization.getType().getTitle() + "</type>" +
-                "</organization>" +
+                "<organizationType>" + this.organization.getType().getTitle() + "</organizationType>" +
                 "</worker>";
     }
 
