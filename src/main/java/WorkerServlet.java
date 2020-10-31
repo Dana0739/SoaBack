@@ -113,8 +113,8 @@ public class WorkerServlet extends HttpServlet {
                 case SERVLET_PATH_EQUAL_SALARY:
                     if (request.getParameterMap().size() == 1) {
                         Double salary = Double.parseDouble(request.getParameter("salary"));
-                        ArrayList<Worker> workers = WorkerManager.countWorkersBySalaryEqualsTo(salary);
-                        writer.append(workers.stream().map(Worker::convertToXML).collect(Collectors.joining()));
+                        long workersCount = WorkerManager.countWorkersBySalaryEqualsTo(salary);
+                        writer.append("<count>").append(String.valueOf(workersCount)).append("</count>");
                         writer.append("</response>");
                     } else {
                         response.sendError(422, "salary parameter is required and must be the only field in this request");

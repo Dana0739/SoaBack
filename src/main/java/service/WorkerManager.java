@@ -22,7 +22,7 @@ public class WorkerManager {
                 ZonedDateTime.parse(parameters.get("creationDate")[0].replace(" ", "+"));
         Double salary = Double.parseDouble(parameters.get("salary")[0]);
         Date endDate = (parameters.get("endDate") == null) ? null
-                : new SimpleDateFormat("dd/MM/yyyy").parse(parameters.get("endDate")[0]);
+                : new SimpleDateFormat("dd-MM-yyyy").parse(parameters.get("endDate")[0]);
         String position = parameters.get("position")[0];
         String status = (parameters.get("status") == null) ? "" : parameters.get("status")[0];
         Integer annualTurnover = Integer.parseInt(parameters.get("annualTurnover")[0]);
@@ -79,9 +79,9 @@ public class WorkerManager {
         return Collections.max(workers, Comparator.comparing(Worker::getSalary));
     }
 
-    public static ArrayList<Worker> countWorkersBySalaryEqualsTo(Double salary) throws SQLException {
-        return (ArrayList<Worker>) getAllWorkers().stream()
-                .filter(w -> w.getSalary().equals(salary)).collect(Collectors.toList());
+    public static long countWorkersBySalaryEqualsTo(Double salary) throws SQLException {
+        return getAllWorkers().stream()
+                .filter(w -> w.getSalary().equals(salary)).count();
     }
 
     public static ArrayList<Worker> getWorkersWithNamesStartsWith(String prefix) throws SQLException {
