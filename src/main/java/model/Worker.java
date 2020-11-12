@@ -109,6 +109,26 @@ public class Worker {
         return this;
     }
 
+    public Worker setOrganizationType(OrganizationType type) {
+        this.organization.setType(type);
+        return this;
+    }
+
+    public Worker setOrganizationType(String type) {
+        this.organization.setType(type);
+        return this;
+    }
+
+    public Worker setAnnualTurnover(Integer turnover) {
+        this.organization.setAnnualTurnover(turnover);
+        return this;
+    }
+
+    public Worker setEmployeesCount(int employeesCount) {
+        this.organization.setEmployeesCount(employeesCount);
+        return this;
+    }
+
     public Worker setCreationDate(ZonedDateTime creationDate) {
         this.creationDate = creationDate;
         return this;

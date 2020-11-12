@@ -14,13 +14,15 @@ import static java.lang.Integer.min;
 
 public class WorkerManager {
 
-    public static Worker makeWorkerFromParams(Map<String, String[]> parameters) throws ParseException {
+    public static Worker makeWorkerFromParams(Map<String, String[]> parameters)
+            throws ParseException, NumberFormatException {
         String name = parameters.get("name")[0];
         Double x = Double.parseDouble(parameters.get("coordinateX")[0]);
         double y = parameters.get("coordinateY") == null ? 0 : Double.parseDouble(parameters.get("coordinateY")[0]);
-        ZonedDateTime creationDate = (parameters.get("creationDate") == null) ? ZonedDateTime.now() :
+        ZonedDateTime creationDate = (parameters.get("creationDate") == null) ? ZonedDateTime.now() : //todo check if + or T
                 ZonedDateTime.parse(parameters.get("creationDate")[0].replace(" ", "+"));
-        Double salary = Double.parseDouble(parameters.get("salary")[0]);
+        Double salary = (parameters.get("salary") == null) ? null
+                : Double.parseDouble(parameters.get("salary")[0]);
         Date endDate = (parameters.get("endDate") == null) ? null
                 : new SimpleDateFormat("dd-MM-yyyy").parse(parameters.get("endDate")[0]);
         String position = parameters.get("position")[0];
@@ -33,6 +35,43 @@ public class WorkerManager {
                 position, status, annualTurnover, employeesCount, organizationType);
     }
 
+    public static Worker updateWorkerFromParams(Map<String, String[]> parameters, Worker worker)
+            throws ParseException, NumberFormatException { //todo check
+        if (parameters.get("name") != null) {
+            worker.setName(parameters.get("name")[0]);
+        }
+        if (parameters.get("coordinateX") != null) {
+            worker.setCoordinateX(Double.parseDouble(parameters.get("name")[0]));
+        }
+        if (parameters.get("coordinateY") != null) {
+            worker.setCoordinateY(parameters.get("coordinateY")[0].isEmpty() ? 0
+                    : Double.parseDouble(parameters.get("coordinateY")[0]));
+        }
+        if (parameters.get("salary") != null) {
+            worker.setSalary(Double.parseDouble(parameters.get("salary")[0]));
+        }
+        if (parameters.get("endDate") != null) {
+            worker.setEndDate(new SimpleDateFormat("dd-MM-yyyy").parse(parameters.get("endDate")[0]));
+        }
+        if (parameters.get("position") != null) {
+            worker.setPosition(Position.getByTitle(parameters.get("position")[0]));
+        }
+        if (parameters.get("status") != null) {
+            worker.setStatus(Status.getByTitle(parameters.get("status")[0]));
+        }
+        if (parameters.get("annualTurnover") != null) {
+            worker.setAnnualTurnover(Integer.parseInt(parameters.get("annualTurnover")[0]));
+        }
+        if (parameters.get("employeesCount") != null) {
+            worker.setEmployeesCount(Integer.parseInt(parameters.get("employeesCount")[0]));
+        }
+        if (parameters.get("organizationType") != null) {
+            worker.setOrganizationType(parameters.get("organizationType")[0]);
+        }
+        return worker;
+    }
+
+
     public static Worker addWorker(Worker worker) throws SQLException {
         WorkerStorage.insertWorker(Objects.requireNonNull(WorkerStorage.getConnection()), worker);
         return worker;
@@ -42,15 +81,13 @@ public class WorkerManager {
         return WorkerStorage.getWorkerById(Objects.requireNonNull(WorkerStorage.getConnection()), id);
     }
 
-    public static Worker updateWorker(Map<String, String[]> parameters, Worker worker)
-            throws ParseException, SQLException {
-        long id = Long.parseLong(parameters.get("id")[0]);
+    public static Worker updateWorker(long id, Worker worker) throws SQLException {
         worker.setId(id);
-        WorkerStorage.updateWorker(Objects.requireNonNull(WorkerStorage.getConnection()), worker);
+        worker = WorkerStorage.updateWorker(Objects.requireNonNull(WorkerStorage.getConnection()), worker);
         return worker;
     }
 
-    public static Worker deleteWorker(long id) throws SQLException {
+    public static boolean deleteWorker(long id) throws SQLException {
         return WorkerStorage.deleteWorker(Objects.requireNonNull(WorkerStorage.getConnection()), id);
     }
 

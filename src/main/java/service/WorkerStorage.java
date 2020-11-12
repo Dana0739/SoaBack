@@ -256,14 +256,14 @@ public class WorkerStorage {
         return worker;
     }
 
-    public static Worker deleteWorker(Connection connection, long id) throws SQLException {
-        Worker worker = getWorkerByIdSaveConnection(connection, id);
+    public static boolean deleteWorker(Connection connection, long id) throws SQLException {
         PreparedStatement delete = connection.prepareStatement("DELETE FROM WORKER WHERE ID = ?;");
         delete.setLong(1, id);
         delete.executeUpdate();
         delete.close();
+        Worker worker = getWorkerByIdSaveConnection(connection, id);
         connection.close();
-        return worker;
+        return worker == null;
     }
 
     private static Worker makeWorkerFromRs(ResultSet rs) throws SQLException {
