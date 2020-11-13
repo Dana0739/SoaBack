@@ -312,13 +312,19 @@ public class WorkerServlet extends HttpServlet {
     }
 
     private static boolean checkParametersForFilterSort(Map<String, String[]> params) {
-        int counter = 0;
-        if (params.containsKey("pageSize")) ++counter;
-        if (params.containsKey("pageNumber")) ++counter;
-        if (params.containsKey("filterFields") && params.containsKey("filterValues")) counter += 2;
-        if (params.containsKey("sortFields")) ++counter;
-        return counter == params.size() &&
-                (!params.containsKey("filterFields") && !params.containsKey("filterValues")
-                        || checkFilterForFilterSort(params.get("filterFields")[0], params.get("filterValues")[0]));
+        try {
+            int counter = 0;
+            if (params.containsKey("pageSize")) ++counter;
+            if (params.containsKey("pageNumber")) ++counter;
+            if (params.containsKey("filterFields") && params.containsKey("filterValues")) counter += 2;
+            if (params.containsKey("sortFields")) ++counter;
+            return counter == params.size() &&
+                    (params.get("pageSize") == null || Integer.parseInt(params.get("pageSize")[0]) >= 0) &&
+                    (params.get("pageNumber") == null || Integer.parseInt(params.get("pageNumber")[0]) >= 0) &&
+                    (!params.containsKey("filterFields") && !params.containsKey("filterValues")
+                            || checkFilterForFilterSort(params.get("filterFields")[0], params.get("filterValues")[0]));
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 }

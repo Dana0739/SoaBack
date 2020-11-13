@@ -48,8 +48,8 @@ public class Worker {
                 "<coordinateX>" + this.coordinates.getX() + "</coordinateX>" +
                 "<coordinateY>" + this.coordinates.getY() + "</coordinateY>" +
                 "<creationDate>" + this.creationDate + "</creationDate>" +
-                "<salary>" + this.salary + "</salary>" +
-                "<endDate>" + this.endDate + "</endDate>" +
+                "<salary>" + ((this.salary == null) ? "" : this.salary) + "</salary>" +
+                "<endDate>" + ((this.endDate == null) ? "" : this.endDate) + "</endDate>" +
                 "<position>" + this.position.getTitle() + "</position>" +
                 "<status>" + ((this.getStatus() == null) ? "" : this.status.getTitle()) + "</status>" +
                 "<annualTurnover>" + this.organization.getAnnualTurnover() + "</annualTurnover>" +
