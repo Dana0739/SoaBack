@@ -20,10 +20,11 @@ public enum Status {
     }
 
     public static ArrayList<String> getAll() {
-        return new ArrayList<>(Arrays.asList("hired", "recommended_for_promotion", "regular", "probation", "null"));
+        return new ArrayList<>(Arrays.asList("hired", "recommended_for_promotion", "regular", "probation", "", "null"));
     }
 
     public static Status getByTitle(String title) {
+        if (title == null) return null;
         switch (title) {
             case "hired": return HIRED;
             case "recommended_for_promotion": return RECOMMENDED_FOR_PROMOTION;

@@ -37,7 +37,7 @@ public class Worker {
     private void validate() {
         if (name.isEmpty()) throw new IllegalArgumentException("Parameter name must not be empty");
         if (salary != null && salary <= 0) throw new IllegalArgumentException("Parameter salary must be more 0 or null");
-        if (this.position == null) throw new IllegalArgumentException("Parameter position must be in: "
+        if (position == null) throw new IllegalArgumentException("Parameter position must be in: "
                 + String.join(", ", Position.getAll()) +" or empty string");
     }
 
@@ -51,7 +51,7 @@ public class Worker {
                 "<salary>" + this.salary + "</salary>" +
                 "<endDate>" + this.endDate + "</endDate>" +
                 "<position>" + this.position.getTitle() + "</position>" +
-                "<status>" + this.status.getTitle() + "</status>" +
+                "<status>" + ((this.getStatus() == null) ? "" : this.status.getTitle()) + "</status>" +
                 "<annualTurnover>" + this.organization.getAnnualTurnover() + "</annualTurnover>" +
                 "<employeesCount>" + this.organization.getEmployeesCount() + "</employeesCount>" +
                 "<organizationType>" + this.organization.getType().getTitle() + "</organizationType>" +

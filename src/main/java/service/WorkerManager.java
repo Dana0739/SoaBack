@@ -113,12 +113,13 @@ public class WorkerManager {
 
     public static Worker getWorkerWithMaxSalary() throws SQLException {
         ArrayList<Worker> workers = getAllWorkers();
+        workers = (ArrayList<Worker>) workers.stream().filter(w -> (w.getSalary()!= null)).collect(Collectors.toList());
         return Collections.max(workers, Comparator.comparing(Worker::getSalary));
     }
 
     public static long countWorkersBySalaryEqualsTo(Double salary) throws SQLException {
         return getAllWorkers().stream()
-                .filter(w -> w.getSalary().equals(salary)).count();
+                .filter(w -> (w.getSalary()!= null && w.getSalary().equals(salary))).count();
     }
 
     public static ArrayList<Worker> getWorkersWithNamesStartsWith(String prefix) throws SQLException {

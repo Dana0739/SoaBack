@@ -204,7 +204,7 @@ public class WorkerStorage {
 
     public static ArrayList<Worker> getAllWorkers(Connection connection) throws SQLException {
         Statement statement = connection.createStatement();
-        ResultSet rs = statement.executeQuery( "SELECT * FROM WORKER;");
+        ResultSet rs = statement.executeQuery( "SELECT * FROM WORKER ORDER BY ID;");
         ArrayList<Worker> workers = collectWorkersFromRs(rs);
         rs.close();
         connection.close();
@@ -273,12 +273,14 @@ public class WorkerStorage {
         ZonedDateTime creationDate = ZonedDateTime.ofInstant(rs.getTimestamp("CREATION_DATE").toInstant(),
                 ZoneId.systemDefault());
         Double salary = rs.getDouble("SALARY");
+        if (salary == 0) salary = null;
         Date endDate = rs.getTimestamp("END_DATE");
         String position = rs.getString("POSITION").trim();
-        String status = rs.getString("STATUS").trim();
+        String status = (rs.getObject("STATUS") == null) ? null : rs.getString("STATUS").trim();
         Integer annualTurnover = rs.getInt("O_ANNUAL_TURNOVER");
         int employeesCount = rs.getInt("O_EMPLOYEES_COUNT");
         String organizationType = rs.getString("O_ORGANIZATION_TYPE").trim();
+
         return new Worker(name, x, y, creationDate, salary, endDate,
                 position, status, annualTurnover, employeesCount, organizationType);
     }
@@ -296,10 +298,10 @@ public class WorkerStorage {
         statement.setString(1, worker.getName());
         statement.setDouble(2, worker.getCoordinates().getX());
         statement.setDouble(3, worker.getCoordinates().getY());
-        statement.setDouble(4, worker.getSalary());
-        statement.setTimestamp(5, new Timestamp(worker.getEndDate().getTime()));
+        statement.setObject(4, (worker.getSalary() == null) ? null : worker.getSalary());
+        statement.setObject(5, (worker.getEndDate() == null) ? null : new Timestamp(worker.getEndDate().getTime()));
         statement.setString(6, worker.getPosition().getTitle());
-        statement.setString(7, worker.getStatus().getTitle());
+        statement.setObject(7, (worker.getStatus() == null) ? null : worker.getStatus().getTitle());
         statement.setInt(8, worker.getOrganization().getAnnualTurnover());
         statement.setInt(9, worker.getOrganization().getEmployeesCount());
         statement.setString(10, worker.getOrganization().getType().getTitle());
