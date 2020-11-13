@@ -36,12 +36,12 @@ public class WorkerManager {
     }
 
     public static Worker updateWorkerFromParams(Map<String, String[]> parameters, Worker worker)
-            throws ParseException, NumberFormatException { //todo check
+            throws ParseException, NumberFormatException {
         if (parameters.get("name") != null) {
             worker.setName(parameters.get("name")[0]);
         }
         if (parameters.get("coordinateX") != null) {
-            worker.setCoordinateX(Double.parseDouble(parameters.get("name")[0]));
+            worker.setCoordinateX(Double.parseDouble(parameters.get("coordinateX")[0]));
         }
         if (parameters.get("coordinateY") != null) {
             worker.setCoordinateY(parameters.get("coordinateY")[0].isEmpty() ? 0
