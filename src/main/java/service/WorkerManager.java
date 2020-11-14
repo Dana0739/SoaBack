@@ -18,7 +18,7 @@ public class WorkerManager {
             throws ParseException, NumberFormatException {
         String name = parameters.get("name")[0];
         Double x = Double.parseDouble(parameters.get("coordinateX")[0]);
-        double y = parameters.get("coordinateY") == null ? 0 : Double.parseDouble(parameters.get("coordinateY")[0]);
+        double y = Double.parseDouble(parameters.get("coordinateY")[0]);
         ZonedDateTime creationDate = ZonedDateTime.now();
         Double salary = (parameters.get("salary") == null) ? null
                 : Double.parseDouble(parameters.get("salary")[0]);
@@ -48,15 +48,21 @@ public class WorkerManager {
         }
         if (parameters.get("salary") != null) {
             worker.setSalary(Double.parseDouble(parameters.get("salary")[0]));
+        } else {
+            worker.setSalary(null);
         }
         if (parameters.get("endDate") != null) {
             worker.setEndDate(new SimpleDateFormat("dd-MM-yyyy").parse(parameters.get("endDate")[0]));
+        } else {
+            worker.setEndDate(null);
         }
         if (parameters.get("position") != null) {
             worker.setPosition(Position.getByTitle(parameters.get("position")[0]));
         }
         if (parameters.get("status") != null) {
             worker.setStatus(Status.getByTitle(parameters.get("status")[0]));
+        } else {
+            worker.setStatus(null);
         }
         if (parameters.get("annualTurnover") != null) {
             worker.setAnnualTurnover(Integer.parseInt(parameters.get("annualTurnover")[0]));

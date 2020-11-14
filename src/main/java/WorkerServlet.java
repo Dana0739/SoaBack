@@ -27,6 +27,8 @@ public class WorkerServlet extends HttpServlet {
 
     private static final ArrayList<String> WORKER_FIELDS = new ArrayList<>(Arrays.asList("name","coordinateX",
             "coordinateY","salary","endDate","position","status","annualTurnover","employeesCount","organizationType"));
+    private static final ArrayList<String> WORKER_FIELDS_REQUIRED = new ArrayList<>(Arrays.asList("name","coordinateX",
+            "coordinateY","position","annualTurnover","employeesCount","organizationType"));
     private static final ArrayList<String> WORKER_FIELDS_WITH_ID_AND_CREATION_DATE =
             new ArrayList<>(Arrays.asList("name","coordinateX", "coordinateY","salary","endDate","position","status",
                     "annualTurnover","employeesCount","organizationType","id","creationDate"));
@@ -40,7 +42,9 @@ public class WorkerServlet extends HttpServlet {
             writer.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
             writer.append("<response>");
             try {
-                if (hasRedundantParameters(request.getParameterMap().keySet())) {
+                if (hasRedundantParameters(request.getParameterMap().keySet()) ||
+                        !hasAllRequiredParameters(request.getParameterMap().keySet()) ||
+                        !validatePostPutFields(request.getParameterMap())) {
                     response.sendError(422);
                 } else {
                     Worker worker = WorkerManager.makeWorkerFromParams(request.getParameterMap());
@@ -182,7 +186,9 @@ public class WorkerServlet extends HttpServlet {
             PrintWriter writer = response.getWriter();
             writer.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
             try {
-                if (hasRedundantParameters(request.getParameterMap().keySet())) {
+                if (hasRedundantParameters(request.getParameterMap().keySet()) ||
+                        !hasAllRequiredParameters(request.getParameterMap().keySet()) ||
+                        !validatePostPutFields(request.getParameterMap())) {
                     response.sendError(422);
                 } else {
                     long id = Long.parseLong(path.substring(path.lastIndexOf(SERVLET_PATH_WORKERS)
@@ -253,9 +259,32 @@ public class WorkerServlet extends HttpServlet {
         return m.matches();
     }
 
+    private static boolean validatePostPutFields(Map<String, String[]> params){
+        try {
+            boolean res = Double.parseDouble(params.get("coordinateY")[0]) < 444 &&
+                    (params.get("salary") == null || Double.parseDouble(params.get("salary")[0]) > 0) &&
+                    Integer.parseInt(params.get("annualTurnover")[0]) > 0 &&
+                    Integer.parseInt(params.get("employeesCount")[0]) > 0 &&
+                    params.get("name") != null && !params.get("name")[0].isEmpty() &&
+                    Position.getByTitle(params.get("position")[0]) != null &&
+                    OrganizationType.getByTitle(params.get("organizationType")[0]) != null;
+            if (params.get("salary") != null) Double.parseDouble(params.get("salary")[0]);
+            if (params.get("endDate") != null) new SimpleDateFormat("dd-MM-yyyy").parse(params.get("endDate")[0]);
+            if (params.get("status") != null) Status.getByTitle(params.get("status")[0]); //throws
+            Double.parseDouble(params.get("coordinateX")[0]);
+            return res;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     private static boolean hasRedundantParameters(Set<String> params) {
         return params.stream().anyMatch(x -> WORKER_FIELDS.stream()
                         .noneMatch(x::equals));
+    }
+
+    private static boolean hasAllRequiredParameters(Set<String> params) {
+        return WORKER_FIELDS_REQUIRED.stream().filter(params::contains).count() == WORKER_FIELDS_REQUIRED.size();
     }
 
     private static boolean hasRedundantFields(String fields) {
@@ -272,7 +301,7 @@ public class WorkerServlet extends HttpServlet {
                         if (Position.getByTitle(filterValues[i]) == null) return false;
                         break;
                     case "status":
-                        if (Status.getByTitle(filterValues[i]) == null) return false;
+                        Status.getByTitle(filterValues[i]); //throws
                         break;
                     case "organizationType":
                         if (OrganizationType.getByTitle(filterValues[i]) == null) return false;
@@ -329,6 +358,7 @@ public class WorkerServlet extends HttpServlet {
             return counter == params.size() &&
                     (params.get("pageSize") == null || Integer.parseInt(params.get("pageSize")[0]) >= 0) &&
                     (params.get("pageNumber") == null || Integer.parseInt(params.get("pageNumber")[0]) >= 0) &&
+                    !hasRedundantFields(params.get("sortFields")[0]) &&
                     (!params.containsKey("filterFields") && !params.containsKey("filterValues")
                             || checkFilterForFilterSort(params.get("filterFields")[0], params.get("filterValues")[0]));
         } catch (NumberFormatException e) {
