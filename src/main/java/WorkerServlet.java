@@ -129,7 +129,11 @@ public class WorkerServlet extends HttpServlet {
             } else if (path.equals(SERVLET_PATH_MAX_SALARY)) { // https://{server-app}/workers/max-salary
                 if (request.getParameterMap().size() == 0) {
                     Worker worker = WorkerManager.getWorkerWithMaxSalary();
-                    writer.append(worker.convertToXML());
+                    if (worker == null) {
+                        response.sendError(404); // no content
+                    } else {
+                        writer.append(worker.convertToXML());
+                    }
                     writer.append("</response>");
                 } else {
                     response.sendError(400); // bad request
@@ -184,11 +188,17 @@ public class WorkerServlet extends HttpServlet {
                     long id = Long.parseLong(path.substring(path.lastIndexOf(SERVLET_PATH_WORKERS)
                             + SERVLET_PATH_WORKERS.length() + 1));
                     Worker worker = WorkerManager.getWorkerById(id);
-                    worker = WorkerManager.updateWorkerFromParams(request.getParameterMap(), worker);
-                    worker = WorkerManager.updateWorker(id, worker);
-                    writer.append("<response>");
-                    writer.append(worker.convertToXML());
-                    writer.append("</response>");
+                    if (worker != null) {
+                        worker = WorkerManager.updateWorkerFromParams(request.getParameterMap(), worker);
+                        worker = WorkerManager.updateWorker(id, worker);
+                        writer.append("<response>");
+                        if (worker.getCreationDate() != null) {
+                            writer.append(worker.convertToXML());
+                        }
+                        writer.append("</response>");
+                    } else {
+                        response.sendError(404); // no content
+                    }
                 }
             } catch (NumberFormatException | ParseException e) {
                 System.out.println(e.getMessage());
@@ -215,6 +225,7 @@ public class WorkerServlet extends HttpServlet {
                 try {
                     long id = Long.parseLong(path.substring(path.lastIndexOf(SERVLET_PATH_WORKERS)
                             + SERVLET_PATH_WORKERS.length() + 1));
+                    if (WorkerManager.getWorkerById(id) == null) response.sendError(404);
                     if (!WorkerManager.deleteWorker(id)) response.sendError(500);
                 } catch (NumberFormatException e) {
                     System.out.println(e.getMessage());
