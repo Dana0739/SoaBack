@@ -164,7 +164,8 @@ public class WorkerStorage {
         }
         if (filterFieldsList.contains("creationDate")) {
             preparedStatement.setTimestamp(filterFieldsList.indexOf("creationDate") + 1,
-                    Timestamp.valueOf(filterValues[filterFieldsList.indexOf("creationDate")]));
+                    java.sql.Timestamp.valueOf(ZonedDateTime.parse(filterValues[filterFieldsList.indexOf("creationDate")]
+                            .replace(" ", "+")).toLocalDateTime()));
         }
         if (filterFieldsList.contains("salary")) {
             preparedStatement.setDouble(filterFieldsList.indexOf("salary") + 1,
@@ -172,7 +173,8 @@ public class WorkerStorage {
         }
         if (filterFieldsList.contains("endDate")) {
             preparedStatement.setTimestamp(filterFieldsList.indexOf("endDate") + 1,
-                    Timestamp.valueOf(filterValues[filterFieldsList.indexOf("endDate")]));
+                    java.sql.Timestamp.valueOf(filterValues[filterFieldsList.indexOf("endDate")]
+                            .replace("T", " ") + ":00"));
         }
         if (filterFieldsList.contains("position")) {
             preparedStatement.setString(filterFieldsList.indexOf("position") + 1,
