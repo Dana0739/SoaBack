@@ -312,11 +312,9 @@ public class WorkerServlet extends HttpServlet {
                         int inumber = Integer.parseInt(filterValues[i]);
                         if (inumber < 0) return false;
                         break;
-                    case "salary": //double >= 0 or null
-                        if (!filterValues[i].equals("null")) {
-                            double dnumber = Double.parseDouble(filterValues[i]);
-                            if (dnumber < 0) return false;
-                        }
+                    case "salary":
+                        double dnumber1 = Double.parseDouble(filterValues[i]);
+                        if (dnumber1 < 0) return false;
                         break;
                     case "coordinateX":
                     case "coordinateY":
@@ -324,8 +322,7 @@ public class WorkerServlet extends HttpServlet {
                         if (filterFields[i].equals("coordinateY") && dnumber > 444) return false;
                         break;
                     case "endDate":
-                        Date endDate = (filterValues[i].equals("null")) ? null
-                                : new SimpleDateFormat("dd-MM-yyyy").parse(filterValues[i]);
+                        Date endDate = new SimpleDateFormat("dd-MM-yyyy").parse(filterValues[i]);
                         break;
                     case "creationDate":
                         ZonedDateTime creationDate = ZonedDateTime.parse(filterValues[i].replace(" ", "+"));
@@ -358,7 +355,7 @@ public class WorkerServlet extends HttpServlet {
             return counter == params.size() &&
                     (params.get("pageSize") == null || Integer.parseInt(params.get("pageSize")[0]) >= 0) &&
                     (params.get("pageNumber") == null || Integer.parseInt(params.get("pageNumber")[0]) >= 0) &&
-                    !hasRedundantFields(params.get("sortFields")[0]) &&
+                    (params.get("sortFields") == null || !hasRedundantFields(params.get("sortFields")[0])) &&
                     (!params.containsKey("filterFields") && !params.containsKey("filterValues")
                             || checkFilterForFilterSort(params.get("filterFields")[0], params.get("filterValues")[0]));
         } catch (NumberFormatException e) {
