@@ -19,8 +19,7 @@ public class WorkerManager {
         String name = parameters.get("name")[0];
         Double x = Double.parseDouble(parameters.get("coordinateX")[0]);
         double y = parameters.get("coordinateY") == null ? 0 : Double.parseDouble(parameters.get("coordinateY")[0]);
-        ZonedDateTime creationDate = (parameters.get("creationDate") == null) ? ZonedDateTime.now() : //todo check if + or T
-                ZonedDateTime.parse(parameters.get("creationDate")[0].replace(" ", "+"));
+        ZonedDateTime creationDate = ZonedDateTime.now();
         Double salary = (parameters.get("salary") == null) ? null
                 : Double.parseDouble(parameters.get("salary")[0]);
         Date endDate = (parameters.get("endDate") == null) ? null
@@ -108,7 +107,7 @@ public class WorkerManager {
         return (pageSize == 0 || workers.size() == 0) ? workers
                 : ((pageNumber * pageSize > workers.size()) ? new ArrayList<>()
                 : new ArrayList<>(workers.subList(pageNumber * pageSize,
-                    min((pageNumber + 1) * pageSize - 1, workers.size() - 1))));
+                    min((pageNumber + 1) * pageSize, workers.size()))));
     }
 
     public static Worker getWorkerWithMaxSalary() throws SQLException {

@@ -35,7 +35,7 @@ public class Worker {
     }
 
     private void validate() {
-        if (name.isEmpty()) throw new IllegalArgumentException("Parameter name must not be empty");
+        if (name== null || name.isEmpty()) throw new IllegalArgumentException("Parameter name must not be empty");
         if (salary != null && salary <= 0) throw new IllegalArgumentException("Parameter salary must be more 0 or null");
         if (position == null) throw new IllegalArgumentException("Parameter position must be in: "
                 + String.join(", ", Position.getAll()) +" or empty string");

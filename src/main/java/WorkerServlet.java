@@ -7,7 +7,6 @@ import service.WorkerManager;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.Console;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
@@ -50,8 +49,10 @@ public class WorkerServlet extends HttpServlet {
                     writer.append("</response>");
                 }
             } catch (NumberFormatException | ParseException e) {
+                System.out.println(e.getMessage());
                 response.sendError(422, e.getMessage());
             } catch (SQLException e) {
+                System.out.println(e.getMessage());
                 response.sendError(500, e.getMessage());
             }
         } else if (checkUrlWithRegExp(path)
@@ -86,15 +87,18 @@ public class WorkerServlet extends HttpServlet {
                     if (checkParametersForFilterSort(request.getParameterMap())) {
                         String pageSizeStr = request.getParameter("pageSize");
                         String pageNumberStr = request.getParameter("pageNumber");
-                        int pageSize = pageSizeStr.isEmpty() ? 0 : Integer.parseInt(pageSizeStr);
-                        int pageNumber = pageNumberStr.isEmpty() ? 0 : Integer.parseInt(pageNumberStr);
+                        int pageSize = (pageSizeStr == null || pageSizeStr.isEmpty())
+                                ? 0 : Integer.parseInt(pageSizeStr);
+                        int pageNumber = (pageNumberStr == null || pageNumberStr.isEmpty())
+                                ? 0 : Integer.parseInt(pageNumberStr);
                         String filterFieldsStr = request.getParameter("filterFields");
                         String sortFieldsStr = request.getParameter("sortFields");
-                        String[] filterFields = (filterFieldsStr.isEmpty()) ? new String[]{} :
-                                filterFieldsStr.split(",");
-                        String[] filterValues = (request.getParameter("filterValues").isEmpty()) ? new String[]{} :
-                                request.getParameter("filterValues").split(",");
-                        String[] sortFields = (sortFieldsStr.isEmpty()) ? new String[]{} :
+                        String[] filterFields = (filterFieldsStr == null || filterFieldsStr.isEmpty())
+                                ? new String[]{} : filterFieldsStr.split(",");
+                        String[] filterValues = (request.getParameter("filterValues") == null
+                                || request.getParameter("filterValues").isEmpty()) ? new String[]{}
+                                : request.getParameter("filterValues").split(",");
+                        String[] sortFields = (sortFieldsStr == null || sortFieldsStr.isEmpty()) ? new String[]{} :
                                 sortFieldsStr.split(",");
                         ArrayList<Worker> workersPage = WorkerManager.getWorkers(filterFields, filterValues,
                                 sortFields, pageSize, pageNumber);
@@ -138,6 +142,7 @@ public class WorkerServlet extends HttpServlet {
                         writer.append("<count>").append(String.valueOf(workersCount)).append("</count>");
                         writer.append("</response>");
                     } catch (NumberFormatException e) {
+                        System.out.println(e.getMessage());
                         response.sendError(422, e.getMessage()); // unprocessable entity
                     }
                 } else {
@@ -160,6 +165,7 @@ public class WorkerServlet extends HttpServlet {
                 response.sendError(400); // bad request
             }
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             response.sendError(500, e.getMessage());
         }
     }
@@ -185,8 +191,10 @@ public class WorkerServlet extends HttpServlet {
                     writer.append("</response>");
                 }
             } catch (NumberFormatException | ParseException e) {
+                System.out.println(e.getMessage());
                 response.sendError(422, e.getMessage());
             } catch (Exception e) {
+                System.out.println(e.getMessage());
                 response.sendError(500, e.getMessage());
             }
         } else if (path.equals(SERVLET_PATH_WORKERS)
@@ -209,8 +217,10 @@ public class WorkerServlet extends HttpServlet {
                             + SERVLET_PATH_WORKERS.length() + 1));
                     if (!WorkerManager.deleteWorker(id)) response.sendError(500);
                 } catch (NumberFormatException e) {
+                    System.out.println(e.getMessage());
                     response.sendError(422, e.getMessage());
                 } catch (SQLException e) {
+                    System.out.println(e.getMessage());
                     response.sendError(500, e.getMessage());
                 }
             } else {
@@ -243,17 +253,6 @@ public class WorkerServlet extends HttpServlet {
                         .noneMatch(x::equals)) && !fields.isEmpty();
     }
 
-    //http://localhost:8080/workers?
-    // filterFields=name,position,status,id,creationDate,employeesCount,salary,
-    // organizationType,annualTurnover,endDate,coordinateY,coordinateX
-    // &
-    // sortFields=name,position,status,id,creationDate,employeesCount,salary,
-    // organizationType,annualTurnover,endDate,coordinateY,coordinateX
-    // &
-    // filterValues=DanaDana,human_resources,hired,4,2020-10-16 19:49:51.825796,
-    // 2,300,government,30,3030-05-25 00:00:00.0,2.7865,1.3546
-    // &
-    // pageSize=0&pageNumber=0
     private static boolean checkFilterValuesForFilterSort(String[] filterFields, String[] filterValues) {
         try {
             for (int i = 0; i < filterFields.length; ++i) {
@@ -285,13 +284,11 @@ public class WorkerServlet extends HttpServlet {
                         if (filterFields[i].equals("coordinateY") && dnumber > 444) return false;
                         break;
                     case "endDate":
-                        Date endDate = (filterValues[i] == null) ? null
+                        Date endDate = (filterValues[i].equals("null")) ? null
                                 : new SimpleDateFormat("dd-MM-yyyy").parse(filterValues[i]);
                         break;
                     case "creationDate":
-                        if (filterValues[i] == null) return false;
-                        ZonedDateTime creationDate = //todo check if + or T
-                                ZonedDateTime.parse(filterValues[i].replace(" ", "+"));
+                        ZonedDateTime creationDate = ZonedDateTime.parse(filterValues[i].replace(" ", "+"));
                         break;
                     case "name":
                         break;
@@ -299,7 +296,7 @@ public class WorkerServlet extends HttpServlet {
                         return false;
                 }
             }
-        } catch (NumberFormatException | ParseException e) {
+        } catch (Exception e) {
             return false;
         }
         return true;
